@@ -3,6 +3,9 @@ import * as THREE from "three";
 import * as dat from "lil-gui";
 import gsap from "gsap";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
 /**
  * Debug
@@ -223,6 +226,25 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 
 /**
+ * Post processing
+ */
+const effectComposer = new EffectComposer(renderer);
+effectComposer.setSize(sizes.width, sizes.height);
+effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const renderPass = new RenderPass(scene, camera);
+effectComposer.addPass(renderPass);
+
+const unrealBloomPass = new UnrealBloomPass();
+effectComposer.addPass(unrealBloomPass);
+unrealBloomPass.strength = 0.25;
+unrealBloomPass.radius = 0.08;
+unrealBloomPass.threshold = 0.3;
+
+gui.add(unrealBloomPass, "enabled");
+gui.add(unrealBloomPass, "strength").min(0).max(2).step(0.001);
+gui.add(unrealBloomPass, "radius").min(0).max(2).step(0.001);
+gui.add(unrealBloomPass, "threshold").min(0).max(1).step(0.001);
+/**
  * Scroll
  */
 let scrollY = window.scrollY;
@@ -272,7 +294,8 @@ const tick = () => {
   }
 
   // Render
-  renderer.render(scene, camera);
+  // renderer.render(scene, camera);
+  effectComposer.render();
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);

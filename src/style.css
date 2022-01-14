@@ -1,0 +1,68 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: #000000;
+}
+
+.webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  outline: none;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  height: 200vh;
+  position: relative;
+  font-family: "Cabin", sans-serif;
+  color: #ffeded;
+  text-transform: uppercase;
+  font-size: 3vmin;
+  padding-left: 10%;
+  padding-right: 10%;
+
+  flex-direction: column;
+  justify-content: center;
+  z-index: 10;
+}
+
+.section:first-of-type {
+  height: 100vh;
+}
+
+.sectionDiv {
+  position: sticky;
+  /* top: calc(50% - 50vh); */
+  top: 50%;
+  transform: translateY(-50%);
+}
+.section h1,
+h2 {
+  background: rgba(100, 100, 100, 0.75);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  width: 100%;
+  text-align: center;
+  /* position: sticky; */
+  /* top: 50%; */
+}
+
+.section p {
+  background: rgba(100, 100, 100, 0.75);
+  padding: 1rem;
+  border-radius: 5px;
+  width: 100%;
+  text-align: center;
+  /* position: sticky; */
+  /* top: 70%; */
+}
+
+/* section:nth-child(odd) {
+  justify-content: flex-end;
+} */

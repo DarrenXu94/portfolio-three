@@ -3,9 +3,6 @@ import * as THREE from "three";
 import * as dat from "lil-gui";
 import gsap from "gsap";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
-import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
 /**
  * Debug
@@ -33,6 +30,7 @@ gltfLoader.load("/models/bike/scene.gltf", (gltf) => {
   //   console.log(gltf.scene);
   gltf.scene.position.y = -0.75;
   gltf.scene.scale.set(0.2, 0.2, 0.2);
+  gltf.scene.rotation.z = 0.5;
   gui
     .add(gltf.scene.rotation, "y")
     .min(-Math.PI)
@@ -47,6 +45,7 @@ gltfLoader.load("/models/retro_computer/scene.gltf", (gltf) => {
   gltf.scene.position.z = -objectsDistance * 1;
   gltf.scene.position.x = -1;
   gltf.scene.scale.set(1.5, 1.5, 1.5);
+  gltf.scene.rotation.z = -0.5;
 
   gui
     .add(gltf.scene.rotation, "y")
@@ -62,6 +61,7 @@ gltfLoader.load("/models/soccer_field/scene.gltf", (gltf) => {
   gltf.scene.position.z = -objectsDistance * 2;
   gltf.scene.position.x = 1;
   gltf.scene.scale.set(0.05, 0.05, 0.05);
+  gltf.scene.rotation.z = 0.5;
 
   gui
     .add(gltf.scene.rotation, "y")
@@ -226,25 +226,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 
 /**
- * Post processing
- */
-const effectComposer = new EffectComposer(renderer);
-effectComposer.setSize(sizes.width, sizes.height);
-effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-const renderPass = new RenderPass(scene, camera);
-effectComposer.addPass(renderPass);
-
-const unrealBloomPass = new UnrealBloomPass();
-effectComposer.addPass(unrealBloomPass);
-unrealBloomPass.strength = 0.25;
-unrealBloomPass.radius = 0.08;
-unrealBloomPass.threshold = 0.3;
-
-gui.add(unrealBloomPass, "enabled");
-gui.add(unrealBloomPass, "strength").min(0).max(2).step(0.001);
-gui.add(unrealBloomPass, "radius").min(0).max(2).step(0.001);
-gui.add(unrealBloomPass, "threshold").min(0).max(1).step(0.001);
-/**
  * Scroll
  */
 let scrollY = window.scrollY;
@@ -289,13 +270,12 @@ const tick = () => {
 
   // Animate meshes
   for (const mesh of sectionMeshes) {
-    mesh.rotation.x += deltaTime * 0.2;
+    // mesh.rotation.z += deltaTime * 0.2;
     mesh.rotation.y += deltaTime * 0.24;
   }
 
   // Render
-  // renderer.render(scene, camera);
-  effectComposer.render();
+  renderer.render(scene, camera);
 
   // Call tick again on the next frame
   window.requestAnimationFrame(tick);

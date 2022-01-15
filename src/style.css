@@ -29,6 +29,8 @@ html {
   flex-direction: column;
   justify-content: center;
   z-index: 10;
+  max-width: 1140px;
+  margin: auto;
 }
 
 .section:first-of-type {

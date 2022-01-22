@@ -23,6 +23,12 @@ gui.addColor(parameters, "materialColor").onChange(() => {
  */
 const gltfLoader = new GLTFLoader();
 
+const material = new THREE.MeshNormalMaterial();
+material.flatShading = true;
+// const material = new THREE.MeshBasicMaterial();
+// material.wireframe = true;
+// material.wireframeLinewidth = 5;
+
 gltfLoader.load("/models/bike/scene.gltf", (gltf) => {
   scene.add(gltf.scene);
   console.log(gltf.scene);
@@ -31,6 +37,11 @@ gltfLoader.load("/models/bike/scene.gltf", (gltf) => {
   gltf.scene.position.y = -0.75;
   gltf.scene.scale.set(0.2, 0.2, 0.2);
   gltf.scene.rotation.z = 0.5;
+
+  var model = gltf.scene;
+  model.traverse((o) => {
+    if (o.isMesh) o.material = material;
+  });
   gui
     .add(gltf.scene.rotation, "y")
     .min(-Math.PI)
@@ -47,6 +58,11 @@ gltfLoader.load("/models/retro_computer/scene.gltf", (gltf) => {
   gltf.scene.scale.set(1.5, 1.5, 1.5);
   gltf.scene.rotation.z = -0.5;
 
+  var model = gltf.scene;
+  model.traverse((o) => {
+    if (o.isMesh) o.material = material;
+  });
+
   gui
     .add(gltf.scene.rotation, "y")
     .min(-Math.PI)
@@ -62,6 +78,11 @@ gltfLoader.load("/models/soccer_field/scene.gltf", (gltf) => {
   gltf.scene.position.x = 1;
   gltf.scene.scale.set(0.05, 0.05, 0.05);
   gltf.scene.rotation.z = 0.5;
+
+  var model = gltf.scene;
+  model.traverse((o) => {
+    if (o.isMesh) o.material = material;
+  });
 
   gui
     .add(gltf.scene.rotation, "y")
@@ -91,11 +112,11 @@ gradientTexture.magFilter = THREE.NearestFilter;
 
 const particleTexture = textureLoader.load("/textures/particles/3.png");
 
-// Material
-const material = new THREE.MeshToonMaterial({
-  color: parameters.materialColor,
-  gradientMap: gradientTexture,
-});
+// // Material
+// const material = new THREE.MeshToonMaterial({
+//   color: parameters.materialColor,
+//   gradientMap: gradientTexture,
+// });
 
 // Objects
 const objectsDistance = 10;

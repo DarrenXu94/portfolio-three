@@ -4,17 +4,20 @@ import * as dat from "lil-gui";
 import gsap from "gsap";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
+import { Sky } from "three/examples//jsm/objects/Sky.js";
+let sky, sun;
+
 /**
  * Debug
  */
 const gui = new dat.GUI();
 
 const parameters = {
-  materialColor: "#52a3cb",
+  materialColor: "#ffffff",
 };
 
 gui.addColor(parameters, "materialColor").onChange(() => {
-  material.color.set(parameters.materialColor);
+  // material.color.set(parameters.materialColor);
   particlesMaterial.color.set(parameters.materialColor);
 });
 
@@ -102,6 +105,50 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
+// Sky
+
+sky = new Sky();
+sky.scale.setScalar(450000);
+scene.add(sky);
+
+sun = new THREE.Vector3();
+const effectController = {
+  turbidity: 10,
+  rayleigh: 1.14,
+  mieCoefficient: 0.008,
+  mieDirectionalG: 0.5,
+  elevation: 2,
+  azimuth: 118,
+  // exposure: renderer.toneMappingExposure,
+};
+function guiChanged() {
+  const uniforms = sky.material.uniforms;
+  uniforms["turbidity"].value = effectController.turbidity;
+  uniforms["rayleigh"].value = effectController.rayleigh;
+  uniforms["mieCoefficient"].value = effectController.mieCoefficient;
+  uniforms["mieDirectionalG"].value = effectController.mieDirectionalG;
+  const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
+  const theta = THREE.MathUtils.degToRad(effectController.azimuth);
+  sun.setFromSphericalCoords(1, phi, theta);
+  uniforms["sunPosition"].value.copy(sun);
+  // renderer.toneMappingExposure = effectController.exposure;
+  // renderer.render(scene, camera);
+}
+
+gui.add(effectController, "turbidity", 0.0, 20.0, 0.1).onChange(guiChanged);
+gui.add(effectController, "rayleigh", 0.0, 4, 0.001).onChange(guiChanged);
+gui
+  .add(effectController, "mieCoefficient", 0.0, 0.1, 0.001)
+  .onChange(guiChanged);
+gui
+  .add(effectController, "mieDirectionalG", 0.0, 1, 0.001)
+  .onChange(guiChanged);
+gui.add(effectController, "elevation", 0, 90, 0.1).onChange(guiChanged);
+gui.add(effectController, "azimuth", -180, 180, 0.1).onChange(guiChanged);
+// gui.add(effectController, "exposure", 0, 1, 0.0001).onChange(guiChanged);
+
+guiChanged();
+
 /**
  * Objects
  */
@@ -183,7 +230,7 @@ particlesGeometry.setAttribute(
 const particlesMaterial = new THREE.PointsMaterial({
   color: parameters.materialColor,
   sizeAttenuation: textureLoader,
-  size: 0.1,
+  size: 0.2,
 });
 
 // particlesMaterial.map = particleTexture;

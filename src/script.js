@@ -7,6 +7,12 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Sky } from "three/examples//jsm/objects/Sky.js";
 let sky, sun;
 
+const loadingManager = new THREE.LoadingManager(
+  // Loaded
+  () => {
+    gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 });
+  }
+);
 /**
  * Debug
  */
@@ -24,7 +30,7 @@ gui.addColor(parameters, "materialColor").onChange(() => {
 /**
  * Models
  */
-const gltfLoader = new GLTFLoader();
+const gltfLoader = new GLTFLoader(loadingManager);
 
 const material = new THREE.MeshNormalMaterial();
 material.flatShading = true;
@@ -153,7 +159,7 @@ guiChanged();
  * Objects
  */
 // Texture
-const textureLoader = new THREE.TextureLoader();
+const textureLoader = new THREE.TextureLoader(loadingManager);
 const gradientTexture = textureLoader.load("textures/gradients/3.jpg");
 gradientTexture.magFilter = THREE.NearestFilter;
 
@@ -280,6 +286,34 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 6;
 cameraGroup.add(camera);
+
+/**
+ * Overlay
+ */
+const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
+const overlayMaterial = new THREE.ShaderMaterial({
+  transparent: true,
+  uniforms: {
+    uAlpha: { value: 1 },
+  },
+
+  vertexShader: `
+      void main()
+      {
+          gl_Position = vec4(position, 1.0);
+      }
+  `,
+  fragmentShader: `
+      uniform float uAlpha;
+
+      void main()
+      {
+          gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+      }
+  `,
+});
+const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial);
+scene.add(overlay);
 
 /**
  * Renderer
